@@ -38,10 +38,10 @@ type LeaderboardService interface {
 
 func Compare(a, b interface{}) int {
 	lv, rv := a.(KeyInfo), b.(KeyInfo)
-	if lv.Score < rv.Score {
+	if lv.Score > rv.Score {
 		return less
 	}
-	if lv.Score > rv.Score {
+	if lv.Score < rv.Score {
 		return greater
 	}
 	if lv.TimeStamp.Unix() < rv.TimeStamp.Unix() {
@@ -116,7 +116,11 @@ func (l *LeaderboardImpl) GetPlayerRankRange(playerId string, rangeNum int) []Ra
 	l.mu.Lock()
 	defer l.mu.Unlock()
 
-	start := ri.Rank - rangeNum
+	halfCnt := (rangeNum - 1) / 2
+	start := ri.Rank - halfCnt
+	if start <= 0 {
+		start = 1
+	}
 	var result []RankInfo
 	l.sl.Range(start, rangeNum, func(rank int, value interface{}) bool {
 		v := value.(KeyInfo)

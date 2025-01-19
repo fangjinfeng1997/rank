@@ -133,7 +133,7 @@ func (sl *SkipList) Range(start int, count int, f func(rank int, value interface
 	current := sl.head.next[0]
 
 	// TODO  从上往下遍历快速定位到起点
-	curRank := 0
+	curRank := 1
 	for i := sl.level; i >= 0; i-- {
 		for {
 			if current.next[i] == nil {
@@ -142,6 +142,8 @@ func (sl *SkipList) Range(start int, count int, f func(rank int, value interface
 			if newRank := curRank + current.span[i]; newRank < start {
 				curRank = newRank
 				current = current.next[i]
+			} else {
+				break
 			}
 		}
 	}
